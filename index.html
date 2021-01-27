@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/quasar@1.14.3/dist/quasar.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <!-- header begin -->
+        <q-toolbar class="text-primary text-center bg-white shadow-1">
+            <q-toolbar-title>Algo.</q-toolbar-title>
+        </q-toolbar>
+        
+        <div class="row q-ma-xl">
+            <!-- Presentation of apps we show this if no takling -->
+            <div class="col-md-6 col-sm-12 offset-md-3 shadow-1" 
+                    style="height: 400px; border-radius:4px; overflow-y: hidden; overflow-x: hidden;"
+                    v-if="vue == 0">
+                <p class="text-h3 text-center text-primary text-bold q-mt-lg">Algo.</p>
+                <p class="text-h3 text-center text-grey-9">Test de performances d'algorithmes</p>
+                <center>
+                    <q-btn class="q-ma-lg" color="primary" label="Complexité moyenne" @click="vue=1"></q-btn>
+                    <q-btn class="q-ma-lg" color="negative" label="Complexité au pire"  @click="vue=2"></q-btn>
+                    <q-btn class="q-ma-lg" color="secondary" label="Performances sur une taille"  @click="vue=3"></q-btn>
+                </center>
+            </div>
+
+            <div class="col-md-6 col-sm-12 offset-md-3 shadow-1" 
+                    style="height: 400px; border-radius:4px; overflow-y: hidden; overflow-x: hidden;"
+                    v-else-if="vue == 1">
+                <div class="row inline justify-around">
+                    <q-btn class="q-ma-lg" color="primary" label="<"  @click="vue=0"></q-btn>
+                    <p class="text-h5 text-center text-primary text-bold q-mt-lg">Complexité moyenne.</p>
+                </div>
+                <center>
+                    <div class="row">
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-primary text-white" v-model="n" 
+                                label="Taille du plus grand tableau"></q-input>
+                        </div>
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-primary text-white" v-model="nbTest" 
+                                label="Nombre de simulation" ></q-input>
+                        </div>
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-primary text-white" v-model="echelle" 
+                                label="Écart" ></q-input>
+                        </div>
+                    </div>
+                </center>
+                <center>
+                    <q-btn class="q-ma-lg" color="primary" label="Simuler" @click="createComplexiteMoyenne(n, nbTest, echelle)"></q-btn>
+                </center>
+            </div>
+
+            <div class="col-md-6 col-sm-12 offset-md-3 shadow-1" 
+                    style="height: 400px; border-radius:4px; overflow-y: hidden; overflow-x: hidden;"
+                    v-else-if="vue == 2">
+                    <div class="row inline justify-around">
+                        <q-btn class="q-ma-lg" color="negative" label="<"  @click="vue=0"></q-btn>
+                        <p class="text-h5 text-center text-negative text-bold q-mt-lg">Complexité au pire.</p>
+                    </div>
+                <center>
+                    <div class="row">
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-negative text-white" v-model="n" 
+                                label="Taille du plus grand tableau"></q-input>
+                        </div>
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-negative text-white" v-model="nbTest" 
+                                label="Nombre de simulation" ></q-input>
+                        </div>
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-negative text-white" v-model="echelle" 
+                                label="Écart" ></q-input>
+                        </div>
+                    </div>
+                </center>
+                <center>
+                    <q-btn class="q-ma-lg" color="negative" label="Simuler" @click="createComplexiteAuPire(n, nbTest, echelle)"></q-btn>
+                </center>
+            </div>
+            
+            <div class="col-md-6 col-sm-12 offset-md-3 shadow-1" 
+                    style="height: 400px; border-radius:4px; overflow-y: hidden; overflow-x: hidden;"
+                    v-else-if="vue == 3">
+                <div class="row inline justify-around">
+                    <q-btn class="q-ma-lg" color="secondary" label="<"  @click="vue=0"></q-btn>
+                    <p class="text-h5 text-center text-secondary text-bold q-mt-lg">Performances sur une taille.</p>
+                </div>
+                <center>
+                    <div class="row">
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-secondary text-white" v-model="taille" 
+                                label="Taille du tableau"></q-input>
+                        </div>
+                        <div class="col-md q-pa-lg">
+                            <q-input standout="bg-secondary text-white" v-model="n" 
+                                label="Nombre de simulation" ></q-input>
+                        </div>
+                    </div>
+                </center>
+                <center>
+                    <q-btn class="q-ma-lg" color="secondary" label="Simuler normal" @click="getMoyenneValeur(taille, n, 1)"></q-btn>
+                    <q-btn class="q-ma-lg" color="secondary" label="Simuler au pire" @click="getMoyenneValeur(taille, n, 0)"></q-btn>
+                </center>
+                <center>
+                    <p>Résultat : {{perf}}</p>
+                </center>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <line-chart :data="chartData" :options="options" v-if="render"></line-chart>
+            </div>
+            <div class="col-md">
+                <line-chart :data="chartEcartData" :options="options" v-if="render"></line-chart>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@^2.0.0/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@1.14.3/dist/quasar.umd.min.js"></script>
+    <script>
+
+        Vue.component('line-chart', {
+            extends: VueChartJs.Line,
+            props: ['data', 'options'],
+            mounted () {
+                this.renderChart(this.data, this.options)
+            }
+            })
+
+        app = new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    vue: 0,
+                    render: true,
+
+                    chartData: {
+                        datasets: [{
+                            label: 'Complexité moyenne',
+                            backgroundColor: '#28abb9',
+                            data: []
+                        },
+                        {
+                            label: 'Complexité au pire',
+                            backgroundColor: '#f87979',
+                            data: []
+                        }]
+                    },
+
+                    chartEcartData: {
+                        datasets:[{
+                                label: 'CM : écart type',
+                                backgroundColor: '#000022',
+                                data: []
+                            },
+                            {
+                                label: 'CP : écart type',
+                                backgroundColor: '#BC2C1A',
+                                data: []
+                            }]
+                    },
+
+                    options: {
+                        responsive: true, 
+                        maintainAspectRatio: false,  
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    },
+
+                    n: null,
+                    taille: null,
+                    nbTest: null,
+                    echelle: null,
+                    perf: null,
+                }
+            },
+            methods: {
+                /* Génère un tableau de taille n
+                * contenant des valeurs aléatoires
+                * @param n la taille du tableau
+                * @return le tableau généré
+                */
+                genererTableau: function (n) {
+                    var aRetourner = []
+                    for (let i = 0; i < n; i++) {
+                        aRetourner.push(
+                            Math.random() * (Number.MAX_SAFE_INTEGER - Number.MIN_SAFE_INTEGER) + Number.MIN_SAFE_INTEGER);
+                    }
+                    return aRetourner;
+                },
+
+                /* Tri un tableau
+                * dans l'ordre croissant en utilisant
+                * la méthode de tri par insertion
+                * @param aTrier le tableau à trier
+                * @return le tableau trié
+                */
+                triCroissant: function(aTrier) {
+                    for (let i = 1; i < aTrier.length; i++) {
+                        var tempo = aTrier[i];
+                        for (var y = i; y > 0 && aTrier[y-1] > tempo; y--) {
+                            aTrier[y] = aTrier[y-1]; 
+                        }
+                        aTrier[y] = tempo;
+                    }
+                    return aTrier;
+                },
+
+                /* Inverse un tableau
+                * @param aInverser le tableau à inverser
+                * @return le tableau inversé
+                */
+                inverser: function(aInverser) {
+                    for (let i = 0; i < (aInverser.length / 2); i++) {
+                        var tempo = aInverser[i];
+                        aInverser[i] = aInverser[aInverser.length - 1 - i];
+                        aInverser[aInverser.length - 1 - i] = tempo;
+                    }
+
+                    return aInverser;
+                },
+
+                 /* lance n fois la fonction triCroissant
+                 * dans l'objectif de calculer sa complexiteMoyenne
+                 * @param n le nombre de simulation
+                 * @param nbTest le taille du tableau auqel on sarette 
+                 */
+                createComplexiteMoyenne: function(nbTest, n, echelle) {
+                    /* On efface tout les tableaux */
+                    this.chartData.datasets[0].data = [];
+                    this.chartEcartData.datasets[0].data = [];
+                    this.chartData.labels = [];
+                    this.chartEcartData.labels = [];
+
+                    if (this.n > 0 && this.nbTest > 0 && this.echelle > 0) {
+                        /* On passe au tri */
+                        for (var i = 0; i <= nbTest; i+= parseInt(echelle)) {
+                            var somme = 0;
+                            var tempsGeneration = []
+                            for (var j = 0; j < n; j++) {
+                                var tabTempo = this.genererTableau(i);
+                                tempsGeneration.push(this.getPerformanceMoyenne(tabTempo));
+                                somme += tempsGeneration[tempsGeneration.length-1];
+                            }
+                                this.chartData.labels.push(i);
+                                this.chartEcartData.labels.push(i);
+                                this.chartData.datasets[0].data.push(somme / j);
+                                //TODO ECART TYPE
+                                this.chartEcartData.datasets[0].data.push(this.getEcartType(tempsGeneration, somme/j))
+                        }
+                        console.log(this.chartData.datasets[0].data)
+                    }
+
+                    this.render = false;
+                    this.$nextTick(() => {
+                        this.render = true;
+                    });
+                    
+                },
+
+                /* lance n fois la fonction triCroissant
+                 * dans l'objectif de calculer sa complexiteMoyenne
+                 * @param n le nombre de simulation
+                 * @param nbTest le taille du tableau auqel on sarette 
+                 */
+                 createComplexiteAuPire: function(nbTest, n, echelle) {
+                    /* On efface tout les tableaux */
+                    this.chartData.datasets[1].data = [];
+                    this.chartEcartData.datasets[1].data = [];
+                    this.chartData.labels = [];
+                    this.chartEcartData.labels = [];
+
+                    if (this.n > 0 && this.nbTest > 0 && this.echelle > 0) {
+                        /* On passe au tri */
+                        for (let i = 0; i <= nbTest; i+= parseInt(echelle)) {
+                            var somme = 0;
+                            var tempsGeneration = []
+                            for (var j = 0; j < n; j++) {
+                                var tabTempo = this.genererTableau(i);
+                                tempsGeneration.push(this.getPerformanceAuPire(tabTempo));
+                                somme += tempsGeneration[tempsGeneration.length-1];
+                            }
+                            this.chartData.labels.push(i);
+                            this.chartEcartData.labels.push(i);
+                            this.chartData.datasets[1].data.push(somme / j);
+                            //TODO ECART TYPE
+                            this.chartEcartData.datasets[1].data.push(this.getEcartType(tempsGeneration, somme/j));
+                        }
+                    }
+
+                    this.render = false;
+                    this.$nextTick(() => {
+                        this.render = true;
+                    });
+                },
+
+                /* Calcul le temps qu'il faut pour trier le tableau 
+                 * @param tab le tableau a trier
+                 */
+                getPerformanceMoyenne: function(tab) {
+                    let begin = performance.now();
+                    this.triCroissant(tab);
+                    let end = performance.now();
+                    return end - begin;
+                },
+
+                /* Calcul le temps qu'il faut pour trier un tableau décroissant 
+                 * @param tab le tableau a trier
+                 */
+                getPerformanceAuPire: function(tab) {
+                    this.triCroissant(tab)
+                    tab = this.inverser(tab)
+                    let begin = performance.now();
+                    this.triCroissant(tab);
+                    let end = performance.now();
+                    return end - begin;
+                },
+
+                /* Calcul la moyenne d'execution pour une taille donné 
+                 * on a soit au pire ou soit normal
+                 * @param taille la taile du tableau
+                 * @param n le nombre de simulation
+                 * @param type le type de simulation
+                 */
+                getMoyenneValeur: function(taille, n, type) {
+                    var somme = 0;
+                    if (type == 0) {
+                        for(var i = 0; i < n; i++) {
+                            var tab = this.genererTableau(taille);
+                            somme += this.getPerformanceAuPire(tab);
+                        }
+                    } else {
+                        for(var i = 0; i < n; i++) {
+                            var tab = this.genererTableau(taille);
+                            somme += this.getPerformanceMoyenne(tab);
+                        }
+                    }
+                    this.perf = somme / n;
+                },
+
+                /* calcul l'ecart type d'un echantillon */
+                getEcartType: function(tabTempsGeneration, moyenne) {
+                    var sommeEcartCarre = 0;
+                    for (var i = 0; i < tabTempsGeneration.length; i++) {
+                        sommeEcartCarre += Math.pow(tabTempsGeneration[i] - moyenne, 2);
+                    }
+
+                    return Math.sqrt(sommeEcartCarre / tabTempsGeneration.length);
+                }
+            }
+      })
+    </script>
+</body>
+</html>
